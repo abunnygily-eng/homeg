@@ -1,0 +1,320 @@
+<!-- index.html - ИСПРАВЛЕННЫЙ -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hi Finance - Умный учет финансов</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- Хедер -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo" onclick="showTab('dashboard')">
+                    <div class="owl-mascot">🦉</div>
+                    <div class="logo-text">
+                        <h1>Hi Finance</h1>
+                        <span>Умный учет финансов</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Основной контент -->
+        <main class="main">
+            <div class="container">
+                <!-- Навигация -->
+                <nav class="tabs">
+                    <button class="tab active" data-tab="dashboard">
+                        <span class="tab-icon">📊</span>
+                        <span class="tab-text">Обзор</span>
+                        <span class="tab-badge" id="total-transactions">0</span>
+                    </button>
+                    <button class="tab" data-tab="transactions">
+                        <span class="tab-icon">💳</span>
+                        <span class="tab-text">Операции</span>
+                        <span class="tab-badge" id="all-count">0</span>
+                    </button>
+                    <button class="tab" data-tab="add">
+                        <span class="tab-icon">➕</span>
+                        <span class="tab-text">Добавить</span>
+                    </button>
+                </nav>
+
+                <!-- Дашборд -->
+                <div id="dashboard" class="tab-content active">
+                    <div class="stats-grid">
+                        <div class="stat-card balance">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-info">
+                                <h3>Общий баланс</h3>
+                                <div class="amount" id="balance">0 ₽</div>
+                                <div class="stat-trend">
+                                    <span class="trend-up">↑ 12%</span>
+                                    <span>за месяц</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card income">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-info">
+                                <h3>Доходы</h3>
+                                <div class="amount" id="income">0 ₽</div>
+                                <div class="stat-trend">
+                                    <span class="trend-up">↑ 8%</span>
+                                    <span>за месяц</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card expense">
+                            <div class="stat-icon">📉</div>
+                            <div class="stat-info">
+                                <h3>Расходы</h3>
+                                <div class="amount" id="expense">0 ₽</div>
+                                <div class="stat-trend">
+                                    <span class="trend-down">↓ 5%</span>
+                                    <span>за месяц</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- График -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">
+                                <span>📊</span>
+                                Динамика финансов
+                            </div>
+                            <div class="chart-actions">
+                                <button class="chart-period-btn active" data-period="7d">7 дней</button>
+                                <button class="chart-period-btn" data-period="30d">30 дней</button>
+                                <button class="chart-period-btn" data-period="90d">90 дней</button>
+                            </div>
+                        </div>
+                        <canvas id="financeChart"></canvas>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <div class="legend-color legend-income"></div>
+                                <span>Доходы</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color legend-expense"></div>
+                                <span>Расходы</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Последние операции -->
+                    <div class="section">
+                        <h2 class="section-title">
+                            <span class="section-icon">🕒</span>
+                            Последние операции
+                        </h2>
+                        <div id="recent-transactions" class="transactions-list">
+                            <div class="empty-state">
+                                <div class="empty-icon">📝</div>
+                                <p>Пока нет операций</p>
+                                <small>Добавьте первую операцию на вкладке "Добавить"</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Список операций -->
+                <div id="transactions" class="tab-content">
+                    <div class="section">
+                        <!-- Поиск и фильтры -->
+                        <div class="filter-section">
+                            <div class="search-container">
+                                <span class="search-icon">🔍</span>
+                                <input type="text" id="search-transactions" class="search-input" placeholder="Поиск по операциям...">
+                            </div>
+                            <div class="filter-bar">
+                                <button class="filter-btn active" data-filter="all">
+                                    Все
+                                    <span class="filter-badge" id="filter-all">0</span>
+                                </button>
+                                <button class="filter-btn" data-filter="income">
+                                    Доходы
+                                    <span class="filter-badge" id="filter-income">0</span>
+                                </button>
+                                <button class="filter-btn" data-filter="expense">
+                                    Расходы
+                                    <span class="filter-badge" id="filter-expense">0</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Экспорт -->
+                        <div class="export-actions">
+                            <button id="export-csv" class="export-btn">
+                                <span class="export-icon">📥</span>
+                                Экспорт CSV
+                            </button>
+                            <button id="export-json" class="export-btn">
+                                <span class="export-icon">📄</span>
+                                Экспорт JSON
+                            </button>
+                        </div>
+                        
+                        <!-- Заголовок и счетчик -->
+                        <h2 class="section-title">
+                            <span class="section-icon">📋</span>
+                            Все операции
+                            <span class="transactions-count" id="transactions-count">(0)</span>
+                        </h2>
+                        
+                        <!-- Список операций -->
+                        <div id="all-transactions" class="transactions-list">
+                            <div class="empty-state">
+                                <div class="empty-icon">💸</div>
+                                <p>Нет операций</p>
+                                <small>Начните вести учет своих финансов</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Добавление операции -->
+                <div id="add" class="tab-content">
+                    <div class="section">
+                        <h2 class="section-title">
+                            <span class="section-icon">✨</span>
+                            Новая операция
+                        </h2>
+                        <form id="transaction-form" class="transaction-form">
+                            <!-- Тип операции -->
+                            <div class="form-section">
+                                <label class="form-label">Тип операции</label>
+                                <div class="type-buttons">
+                                    <div class="type-btn active" data-type="income">
+                                        <span class="type-icon">⬆️</span>
+                                        <span class="type-text">Доход</span>
+                                    </div>
+                                    <div class="type-btn" data-type="expense">
+                                        <span class="type-icon">⬇️</span>
+                                        <span class="type-text">Расход</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Сумма -->
+                            <div class="form-section">
+                                <label for="amount" class="form-label">Сумма *</label>
+                                <div class="input-with-icon">
+                                    <span class="input-icon">💰</span>
+                                    <input type="number" id="amount" class="form-input" placeholder="0.00" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Категория -->
+                            <div class="form-section">
+                                <label for="category" class="form-label">Категория *</label>
+                                <div class="input-with-icon">
+                                    <span class="input-icon">📂</span>
+                                    <select id="category" class="form-select" required>
+                                        <option value="">Выберите категорию</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Описание -->
+                            <div class="form-section">
+                                <label for="description" class="form-label">Описание</label>
+                                <div class="input-with-icon">
+                                    <span class="input-icon">📝</span>
+                                    <input type="text" id="description" class="form-input" placeholder="Краткое описание операции...">
+                                </div>
+                            </div>
+                            
+                            <!-- Кнопка отправки -->
+                            <button type="submit" class="submit-btn">
+                                <span class="btn-icon">💾</span>
+                                Сохранить операцию
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Футер -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>🦉 Hi Finance - Ваш умный финансовый помощник</p>
+                <div class="footer-stats">
+                    <div class="footer-stat">
+                        <div class="footer-stat-value" id="footer-balance">0 ₽</div>
+                        <div class="footer-stat-label">Баланс</div>
+                    </div>
+                    <div class="footer-stat">
+                        <div class="footer-stat-value" id="footer-transactions">0</div>
+                        <div class="footer-stat-label">Операций</div>
+                    </div>
+                    <div class="footer-stat">
+                        <div class="footer-stat-value" id="footer-categories">0</div>
+                        <div class="footer-stat-label">Категорий</div>
+                    </div>
+                </div>
+                <small>Версия 2.0 • © 2025 Все права защищены</small>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Переключатель темы -->
+    <button id="theme-switch" class="theme-switch">🌙</button>
+
+    <!-- Модальное окно деталей операции -->
+    <div class="transaction-details">
+        <div class="details-content">
+            <div class="details-header">
+                <h2 class="details-title">Детали операции</h2>
+                <button id="close-details" class="close-btn">×</button>
+            </div>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">
+                        <span class="detail-icon">📂</span>
+                        Категория:
+                    </span>
+                    <span class="detail-value" id="detail-category"></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">
+                        <span class="detail-icon">💰</span>
+                        Сумма:
+                    </span>
+                    <span class="detail-value" id="detail-amount"></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">
+                        <span class="detail-icon">📊</span>
+                        Тип:
+                    </span>
+                    <span class="detail-value" id="detail-type"></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">
+                        <span class="detail-icon">📅</span>
+                        Дата:
+                    </span>
+                    <span class="detail-value" id="detail-date"></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">
+                        <span class="detail-icon">📝</span>
+                        Описание:
+                    </span>
+                    <span class="detail-value" id="detail-description"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
